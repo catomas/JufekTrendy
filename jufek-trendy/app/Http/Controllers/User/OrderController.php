@@ -51,14 +51,16 @@ class OrderController extends Controller
             $productsInCart = array();
             $total = 0;
         
-            $customization = $request->session()->get("customization"); //obtenemos id de la personalización guardada en sesion
+            //obtenemos id de la personalización guardada en sesion
+            $customization = $request->session()->get("customization");
             if ($customization) {
                 $id = $customization;
                 $customization = Customization::where('id', '=', $id)->with('product')->get();
                 $total = ($customization[0]->getPrice()) + ($customization[0]->product->getPrice());
             }
-
-            $ids = $request->session()->get("products"); //obtenemos ids de productos guardados en session
+            
+            //obtenemos ids de productos guardados en session
+            $ids = $request->session()->get("products");
             if ($ids) {
                 foreach ($products as $product) {
                     if (in_array($product->getId(), array_keys($ids))) {
@@ -82,7 +84,8 @@ class OrderController extends Controller
             $order->setUserId($user_id);
             $order->save();
 
-            if ($customization) { //agregamos el producto perzonalizado a la orden
+            //agregamos el producto perzonalizado a la orden
+            if ($customization) {
                 $item = new Item();
                 $item->setAmount(1);
                 $item->setSubtotal(($customization[0]->getPrice()) + ($customization[0]->product->getPrice()));
@@ -92,7 +95,8 @@ class OrderController extends Controller
                 $item->save();
             }
 
-            if ($ids) { //agregamos el resto de productos a la orden
+            //agregamos el resto de productos a la orden
+            if ($ids) {
                 foreach ($productsInCart as $product) {
                     $item = new Item();
                     $item->setAmount(intval($ids[$product->getId()]));
